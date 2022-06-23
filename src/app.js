@@ -49,34 +49,6 @@ function fromHex(hexString) {
     bytes[i] = (a << 4) | b;
   }
 
-  state.board[0] = bytes[0];
-  state.board[1] = bytes[1];
-  state.board[2] = bytes[2];
-  state.board[3] = bytes[1];
-  state.board[4] = bytes[0];
-  state.board[5] = bytes[3];
-  state.board[6] = bytes[4];
-  state.board[7] = bytes[5];
-  state.board[8] = bytes[4];
-  state.board[9] = bytes[3];
-  state.board[10] = bytes[6];
-  state.board[11] = bytes[7];
-  state.board[12] = bytes[8];
-  state.board[13] = bytes[7];
-  state.board[14] = bytes[6];
-  state.board[15] = bytes[9];
-  state.board[16] = bytes[10];
-  state.board[17] = bytes[11];
-  state.board[18] = bytes[10];
-  state.board[19] = bytes[9];
-  state.board[20] = bytes[12];
-  state.board[21] = bytes[13];
-  state.board[22] = bytes[14];
-  state.board[23] = bytes[13];
-  state.board[24] = bytes[12];
-
-  render(state);
-
   return i === bytes.length ? bytes : bytes.slice(0, i);
 }
 
@@ -93,9 +65,33 @@ function displayIdenticon() {
   let username = fromHex(sha1(inputElem.value.trim()));
   username = username.slice(0, 15);
 
-  rgbToHex();
+  state.board[0] = username[0];
+  state.board[1] = username[1];
+  state.board[2] = username[2];
+  state.board[3] = username[1];
+  state.board[4] = username[0];
+  state.board[5] = username[3];
+  state.board[6] = username[4];
+  state.board[7] = username[5];
+  state.board[8] = username[4];
+  state.board[9] = username[3];
+  state.board[10] = username[6];
+  state.board[11] = username[7];
+  state.board[12] = username[8];
+  state.board[13] = username[7];
+  state.board[14] = username[6];
+  state.board[15] = username[9];
+  state.board[16] = username[10];
+  state.board[17] = username[11];
+  state.board[18] = username[10];
+  state.board[19] = username[9];
+  state.board[20] = username[12];
+  state.board[21] = username[13];
+  state.board[22] = username[14];
+  state.board[23] = username[13];
+  state.board[24] = username[12];
 
-  console.log(state.board);
+  rgbToHex();
 }
 
 function componentToHex(c) {
