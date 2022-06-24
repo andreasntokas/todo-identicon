@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import sha1 from 'js-sha1';
-import { fromHex } from './fromHex';
+import { fromHex, rgbToHex } from './utils';
 
 const boardElem = document.getElementById('board');
 const inputElem = document.getElementById('input');
@@ -19,67 +19,32 @@ function refreshBoard() {
   state.color = '';
 }
 
-function displayIdenticon() {
-  let username = fromHex(sha1(inputElem.value.trim()));
-  username = username.slice(0, 15);
+function generateIdenticon(username) {
+  const hash = sha1(username);
+  const bytes = fromHex(hash).slice(0, 15);
+  const [r, g, b] = bytes; // array destructuring
 
-  state.board[0] = username[0];
-  state.board[1] = username[1];
-  state.board[2] = username[2];
-  state.board[3] = username[1];
-  state.board[4] = username[0];
-  state.board[5] = username[3];
-  state.board[6] = username[4];
-  state.board[7] = username[5];
-  state.board[8] = username[4];
-  state.board[9] = username[3];
-  state.board[10] = username[6];
-  state.board[11] = username[7];
-  state.board[12] = username[8];
-  state.board[13] = username[7];
-  state.board[14] = username[6];
-  state.board[15] = username[9];
-  state.board[16] = username[10];
-  state.board[17] = username[11];
-  state.board[18] = username[10];
-  state.board[19] = username[9];
-  state.board[20] = username[12];
-  state.board[21] = username[13];
-  state.board[22] = username[14];
-  state.board[23] = username[13];
-  state.board[24] = username[12];
+  const identicon = _.reduce(
+    _.chunk(_.take(bytes, 15), 3),
+    (grid, row) => _.concat(grid, row, _.reverse(_.dropRight(row))),
+    []
+  );
 
-  rgbToHex();
-}
+  state.board = identicon;
 
-function componentToHex(c) {
-  let hex = c.toString(16);
-  return hex.length == 1 ? '0' + hex : hex;
-}
-
-function rgbToHex(r, g, b) {
-  state.color =
-    '#' +
-    componentToHex(state.board[0]) +
-    componentToHex(state.board[1]) +
-    componentToHex(state.board[2]);
+  state.color = rgbToHex(r, g, b);
 }
 
 inputElem.addEventListener('input', (e) => {
-  if (e.target.value === '') {
+  const username = e.target.value.trim();
+
+  if (username === '') {
     refreshBoard();
     render(state);
     return;
   }
 
-  if (/^\s/.test(e.target.value)) {
-    e.target.value = '';
-    render(state);
-    return;
-  }
-
-  inputElem.textContent = e.target.value;
-  displayIdenticon();
+  generateIdenticon(username);
   render(state);
 });
 
@@ -90,16 +55,86 @@ function render(state) {
     const cellElement = document.createElement('div');
     cellElement.classList.add('cell');
 
-    if (state.board[index] % 2 === 0) {
-      cellElement.style.backgroundColor = state.color;
-    }
-
-    if (state.board[index] % 2 !== 0) {
-      cellElement.style.backgroundColor = 'white';
-    }
+    cellElement.style.backgroundColor =
+      state.board[index] % 2 === 0 ? state.color : '#FFFFFF';
 
     boardElem.appendChild(cellElement);
   });
 }
 
 render(state);
+
+/*
+const Counter = document.querySelector("#counter");
+
+const incButton = document.querySelector("#incButton");
+const incBy10Button = document.querySelector("#incBy10Button");
+const decButton = document.querySelector("#decButton");
+const resetButton = document.querySelector("#resetButton");
+
+// ========================================================
+
+const initState = {
+  count: 0
+};
+
+const counterReducer = (state, action) => {
+  switch (action.type) {
+    case "INCREMENT":
+      return {
+        ...state, count: state.count + 1
+      };
+    case "INCREMENT_BY_AMOUNT":
+      return {
+        ...state, count: state.count + action.payload,
+      };
+    case "DECREMENT":
+      return {
+        ...state, count: state.count - 1
+      };
+    case "RESET":
+      return initState;
+    default:
+      return state;
+  }
+};
+
+// ========================================================
+
+let state = initState;
+
+incButton.addEventListener("click", () => {
+  state = counterReducer(state, {
+    type: "INCREMENT"
+  });
+  render(state);
+});
+
+incBy10Button.addEventListener("click", () => {
+  state = counterReducer(state, {
+    type: "INCREMENT_BY_AMOUNT",
+    payload: 10,
+  });
+  render(state);
+});
+
+decButton.addEventListener("click", () => {
+  state = counterReducer(state, {
+    type: "DECREMENT"
+  });
+  render(state);
+});
+
+resetButton.addEventListener("click", () => {
+  state = counterReducer(state, {
+    type: "RESET"
+  });
+  render(state);
+});
+
+function render(state) {
+  Counter.innerHTML = state.count;
+}
+
+render(state);
+*/
